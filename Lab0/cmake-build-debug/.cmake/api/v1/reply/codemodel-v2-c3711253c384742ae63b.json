@@ -49,8 +49,8 @@
 	"kind" : "codemodel",
 	"paths" : 
 	{
-		"build" : "D:/College/term6/computer graphics/labs/Lab0/cmake-build-debug",
-		"source" : "D:/College/term6/computer graphics/labs/Lab0"
+		"build" : "D:/College/term6/computer graphics/labs/GraphicsOpenGLLabs/Lab0/cmake-build-debug",
+		"source" : "D:/College/term6/computer graphics/labs/GraphicsOpenGLLabs/Lab0"
 	},
 	"version" : 
 	{

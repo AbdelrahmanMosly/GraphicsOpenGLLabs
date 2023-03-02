@@ -11,10 +11,10 @@
 //points: datastructure to store current points
 std::vector<glm::vec3> points;
 // window dimension
-float windowWidth = 100.0;
-float windowHeight = 100.0;
+int windowWidth = 500.0;
+int windowHeight = 500.0;
 // Drawing routine.
-void drawScene(void)
+void drawScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
 	
@@ -22,33 +22,37 @@ void drawScene(void)
 	/*
 	----------set point size below---------
 	*/
-		//code here
+    glPointSize(5.0);
 	//-------------------------------------
 	/*
 	----------write points drawing logic below------------
 	*/
-	glBegin(/*specify suitable perimitve type here*/);
-	
-		//code here
+	glBegin(GL_POINT);
+	    for(glm::vec3 point: points)
+            glVertex3f(point.x,point.y,point.z);
 	glEnd();
 	//----------------------------------------------------
 	/*
 	----------write lines drawing logic below------------
 	*/
-	glBegin(/*specify suitable perimitve type here*/);
-		//code here
+	glBegin(GL_LINE);
+        for(glm::vec3 point: points)
+            glVertex3f(point.x,point.y,point.z);
 	glEnd();
 	//----------------------------------------------------
 	glFlush();
 }
 // Initialization routine.
-void setup(void)
+void setup()
 {
 	glClearColor(1.0, 1.0, 1.0, 0.0);
 }
 // OpenGL window reshape routine.
 void resize(int w, int h)
 {
+    windowWidth = glutGet(GLUT_WINDOW_WIDTH);
+    windowHeight = glutGet(GLUT_WINDOW_HEIGHT);
+
 	glViewport(0, 0, w, h);
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
@@ -61,13 +65,31 @@ void keyInput(unsigned char key, int x, int y)
 {
 	switch (key)
 	{
-	case 27:
-		exit(0);
-		break;
+	case 27: {
+        exit(0);
+    }
 	/*
 	------------- Add +/- cases handling below (handle corner cases)----------------
 	*/
-		//code here
+    case '+':
+    {
+        std::random_device rd;
+        std::mt19937 gen(rd());
+        std::uniform_real_distribution<float> dis(0.0, 1.0);
+
+        glm::vec3 point(dis(gen) * (float)windowWidth, dis(gen) * (float)windowHeight, 0.0f);
+        points.push_back(point);
+
+        glutPostRedisplay();
+        break;
+    }case '-':
+    {
+        if(!points.empty()){
+            points.pop_back();
+            glutPostRedisplay();
+        }
+        break;
+    }
 	//-----------------------------------------------------------------------
 	default:
 		break;
@@ -75,7 +97,7 @@ void keyInput(unsigned char key, int x, int y)
 }
 
 // Routine to output interaction instructions to the C++ window.
-void printInteraction(void)
+void printInteraction()
 {
 	std::cout << "Interaction:" << std::endl;
 	std::cout << "Press +/- to add/erase random point" << std::endl;
@@ -90,7 +112,7 @@ int main(int argc, char** argv)
 	glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
 
 	glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(windowWidth, windowHeight);
 	glutInitWindowPosition(100, 100);
 	glutCreateWindow("RandomLines.cpp");
 	glutDisplayFunc(drawScene);//drawing function
