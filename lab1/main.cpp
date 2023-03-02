@@ -13,32 +13,42 @@ std::vector<glm::vec3> points;
 // window dimension
 int windowWidth = 500.0;
 int windowHeight = 500.0;
+//othos
+float orthoTop = 100;
+float orthoRight = 100;
 // Drawing routine.
 void drawScene()
 {
 	glClear(GL_COLOR_BUFFER_BIT);
-	
-	glLineWidth(1.0); // Default line width.
+	glLineWidth(2.0); // Default line width.
 	/*
 	----------set point size below---------
 	*/
-    glPointSize(5.0);
+    glPointSize(3.0);
 	//-------------------------------------
+
+    std::random_device rd;
+    std::mt19937 gen(rd());
+    std::uniform_real_distribution<float> dis(0.0, 1.0);
 	/*
 	----------write points drawing logic below------------
 	*/
-	glBegin(GL_POINT);
-	    for(glm::vec3 point: points)
-            glVertex3f(point.x,point.y,point.z);
+	glBegin(GL_POINTS);
+    for(glm::vec3 point: points) {
+        glColor3f(dis(gen),dis(gen),dis(gen));
+        glVertex3f(point.x, point.y, point.z);
+    }
 	glEnd();
 	//----------------------------------------------------
 	/*
 	----------write lines drawing logic below------------
 	*/
-	glBegin(GL_LINE);
-        for(glm::vec3 point: points)
-            glVertex3f(point.x,point.y,point.z);
-	glEnd();
+    glBegin(GL_LINES);
+    for(glm::vec3 point: points) {
+        glColor3f(dis(gen),dis(gen),dis(gen));
+        glVertex3f(point.x, point.y, point.z);
+    }
+    glEnd();
 	//----------------------------------------------------
 	glFlush();
 }
