@@ -3,8 +3,8 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <iostream>
-static enum choice {ortho=1, prespective=2};
-static enum userInput {zoomIn='i', zoomOut='o', stopSpinning=' ', CCW=GLUT_LEFT_BUTTON, CW= GLUT_RIGHT_BUTTON};
+enum choice {ortho=1, prespective=2};
+enum userInput {zoomIn='i', zoomOut='o', stopSpinning=' ', CCW=GLUT_LEFT_BUTTON, CW= GLUT_RIGHT_BUTTON};
 int userChoice = 0;
 float orthoLeft = -50;
 float orthoRight = 50;
@@ -115,6 +115,12 @@ void spinDisplay(void)
         2- mark window to be rerendered (hint: glutPostRedisplay, prveTime)
     */
     // code here
+    float currTime=glutGet(GLUT_ELAPSED_TIME);
+    float delta=(currTime-prevTime)/1000.0;
+    prevTime=currTime;
+    currentSpin+=spinSpeed*delta;
+    currentSpin-=currentSpin>360?360:0;
+    glutPostRedisplay();
     //------------------------------------------------------
 }
 
@@ -126,6 +132,12 @@ void spinDisplayReverse(void)
         2- mark window to be rerendered
     */
     // code here
+    float currTime=glutGet(GLUT_ELAPSED_TIME);
+    float delta=(currTime-prevTime)/1000.0;
+    prevTime=currTime;
+    currentSpin-=spinSpeed*delta;
+    currentSpin+=currentSpin<0?360:0;
+    glutPostRedisplay();
     //---------------------------------------------------------------------
 }
 
@@ -139,7 +151,7 @@ void mouse(int button, int state, int x, int y)
             write code below:
                 1- assign spin logic to be invoked regularly (hint: glutIdleFunc)
             */
-
+            glutIdleFunc(spinDisplay);
             //-------------------------------------------
             break;
         case CW:
@@ -149,11 +161,15 @@ void mouse(int button, int state, int x, int y)
             */
             // code here
             //-------------------------------------------
+            glutIdleFunc(spinDisplayReverse);
             break;
 
         default:
             break;
     }
+}
+void keep_prevtime_updated(){
+    prevTime= glutGet(GLUT_ELAPSED_TIME);
 }
 void keyInput(unsigned char key, int x, int y)
 {
@@ -169,6 +185,8 @@ void keyInput(unsigned char key, int x, int y)
                 2- mark window for rerendering
             */
             // code here
+            zOffset += 0.2;
+            glutPostRedisplay();
             //--------------------------------------
             break;
         case zoomOut:
@@ -178,6 +196,8 @@ void keyInput(unsigned char key, int x, int y)
                 2- mark window for rerendering
             */
             // code here
+            zOffset -= 0.2;
+            glutPostRedisplay();
             //--------------------------------------
             break;
         case stopSpinning:
@@ -186,6 +206,7 @@ void keyInput(unsigned char key, int x, int y)
                 1- stop spinning (hint: use NULL)
             */
             // code here
+            glutIdleFunc(keep_prevtime_updated);
             //------------------------------------
             break;
         default:
@@ -205,6 +226,7 @@ void resize(int w, int h)
                 1- initiate viewing box for parallel projection(use ortho variables (orthoLeft, orthoRight, ...))
             */
             // code here
+            glOrtho(orthoLeft,orthoRight,orthoBottom,orthoTop,orthoNear,orthoFar);
             //---------------------------------------------------------------
             break;
         case prespective:
@@ -212,6 +234,7 @@ void resize(int w, int h)
             write code below:
                 1- initiate frustum for perspective projection (use fru variables (fruLeft, fruRight, ...))
             */
+            glFrustum(fruLeft,fruRight,fruBottom,fruTop,fruNear,fruFar);
             // code here
             //-----------------------------------------------------
             break;
@@ -227,6 +250,13 @@ void printUserInteraction() {
      1- print user interaction(good practice)
     */
     // code here
+    std::cout << "Select which projection you want for:\n"
+                 "parallel projection please enter 1\n"
+                 "perspective projection please enter 2\n"
+                 "Use i to zoom in o to zoom out\n"
+                 "left mouse button to rotate counter clock wise\n"
+                 "right mouse button to rotate clock wise\n"
+                 "space bar to stop rotating the object\n>> ";
     //---------------------------------------
 }
 
@@ -236,6 +266,7 @@ int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
 
+    glutIdleFunc(keep_prevtime_updated);
     glutInitContextVersion(4, 3);
     glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
     printUserInteraction();
@@ -245,6 +276,7 @@ int main(int argc, char** argv)
         1- accept input from user and assign the value to userChoice variable
     */
     // code here
+    std::cin >> userChoice;
     //---------------------------------------------------------------------
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
     glutInitWindowSize(windowWidth, windowHeight);
