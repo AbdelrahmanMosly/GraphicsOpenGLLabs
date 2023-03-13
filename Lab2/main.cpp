@@ -1,5 +1,13 @@
 /* write user interaction here for good practice */
-
+/**
+ * "Select which projection you want for:\n"
+                 "parallel projection please enter 1\n"
+                 "perspective projection please enter 2\n"
+                 "Use i to zoom in o to zoom out\n"
+                 "left mouse button to rotate counter clock wise\n"
+                 "right mouse button to rotate clock wise\n"
+                 "space bar to stop rotating the object\n>> ";
+ */
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 #include <iostream>
@@ -49,7 +57,7 @@ void drawScene(void)
                 you are encourged to change points location and observe its effects on rotation
             */
             // code here
-            glRotatef(currentSpin, 0, 1, 0);
+            glRotatef(currentSpin, 0, 0, 1);
             glBegin(GL_TRIANGLES);
             glVertex3f(0.0, 10.0, 0.0);
             glVertex3f(-30.0, 0.0, 0.0);
@@ -73,27 +81,33 @@ void drawScene(void)
             */
             // code here
             glTranslatef(0,0,zOffset);
-            glRotatef(currentSpin,0,0,1);
-            glBegin(GL_TRIANGLES);
+            glRotatef(currentSpin,0,1,0);
+
+            glBegin(GL_TRIANGLE_FAN);
             glVertex3f(0, 5, 0);
             glVertex3f(5, 0, 5);
             glVertex3f(5, 0, -5);
-            glEnd();
-            glBegin(GL_TRIANGLES);
-            glVertex3f(0, 5, 0);
-            glVertex3f(5, 0, -5);
             glVertex3f(-5, 0, -5);
-            glEnd();
-            glBegin(GL_TRIANGLES);
-            glVertex3f(0, 5, 0);
             glVertex3f(-5, 0, 5);
-            glVertex3f(-5, 0, -5);
-            glEnd();
-            glBegin(GL_TRIANGLES);
-            glVertex3f(0, 5, 0);
             glVertex3f(5, 0, 5);
-            glVertex3f(-5, 0, 5);
             glEnd();
+//            glBegin(GL_TRIANGLES);
+//            glVertex3f(0, 5, 0);
+//            glVertex3f(5, 0, 5);
+//            glVertex3f(5, 0, -5);
+//
+//            glVertex3f(0, 5, 0);
+//            glVertex3f(5, 0, -5);
+//            glVertex3f(-5, 0, -5);
+//
+//            glVertex3f(0, 5, 0);
+//            glVertex3f(-5, 0, 5);
+//            glVertex3f(-5, 0, -5);
+//
+//            glVertex3f(0, 5, 0);
+//            glVertex3f(5, 0, 5);
+//            glVertex3f(-5, 0, 5);
+//            glEnd();
             //----------------------------------------------------
             break;
         default:
