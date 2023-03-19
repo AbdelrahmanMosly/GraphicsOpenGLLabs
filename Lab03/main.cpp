@@ -99,9 +99,13 @@ void drawScene(void)
             glBegin(GL_LINE_STRIP);
             for (float z = 0.0f; z <= height; z += 0.05f)
             {
-                GLfloat x = R * cos(angle);
-                GLfloat y = R* sin(angle);
+                float x = R * cos(angle);
+                float y = R* sin(angle);
 
+                float red = (GLfloat) rand() / RAND_MAX;
+                float green = (GLfloat) rand() / RAND_MAX;
+                float blue = (GLfloat) rand() / RAND_MAX;
+                glColor3f(red, green, blue);
                 glVertex3f(x, y, z);
 
                 angle += 1 / R * 180.0f / M_PI; // increment angle based on pitch
