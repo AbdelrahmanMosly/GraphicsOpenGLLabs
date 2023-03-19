@@ -20,6 +20,7 @@
 #include <GL/freeglut.h>
 
 // Globals.
+enum choice {sphere=1, helix=2};
 static float R = 5.0; // Radius of hemisphere.
 static int p = 6; // Number of longitudinal slices.
 static int q = 4; // Number of latitudinal slices.
@@ -27,7 +28,9 @@ static float Xangle = 0.0, Yangle = 0.0, Zangle = 0.0; // Angles to rotate hemis
 static float offset = -10;
 static float spinSpeed = 5;
 static float prev_time = 0;
+int userChoice = 0;
 // Initialization routine.
+
 void setup(void)
 {
 	glClearColor(1.0, 1.0, 1.0, 0.0);
@@ -54,39 +57,46 @@ void drawScene(void)
 	// Hemisphere properties.
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 	glColor3f(0.0, 0.0, 0.0);
+    switch (userChoice) {
+        case sphere:
+            // Array of latitudinal triangle strips, each parallel to the equator, stacked one
+            // above the other from the equator to the north pole.
+            for (j = 0; j < q; j++)
+            {
+                // One latitudinal triangle strip.
+                glBegin(GL_TRIANGLE_STRIP);
+                for (i = 0; i <= p; i++)
+                {
+                    glVertex3f(R * cos((float)(j + 1) / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
+                               R * sin((float)(j + 1) / q * M_PI / 2.0),
+                               -R * cos((float)(j + 1) / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
+                    glVertex3f(R * cos((float)j / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
+                               R * sin((float)j / q * M_PI / 2.0),
+                               -R * cos((float)j / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
+                }
+                glEnd();
+            }
+            for (j = q; j >= 0; j--)
+            {
+                // One latitudinal triangle strip.
+                glBegin(GL_TRIANGLE_STRIP);
+                for (i = 0; i <= p; i++)
+                {
+                    glVertex3f(R * cos((float)(j + 1) / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
+                               -R * sin((float)(j + 1) / q * M_PI / 2.0),
+                               -R * cos((float)(j + 1) / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
+                    glVertex3f(R * cos((float)j / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
+                               -R * sin((float)j / q * M_PI / 2.0),
+                               -R * cos((float)j / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
+                }
+                glEnd();
+            }
+            break;
+        case helix:
+            
+            break;
+    }
 
-	// Array of latitudinal triangle strips, each parallel to the equator, stacked one
-    // above the other from the equator to the north pole.
-    for (j = 0; j < q; j++)
-    {
-        // One latitudinal triangle strip.
-        glBegin(GL_TRIANGLE_STRIP);
-        for (i = 0; i <= p; i++)
-        {
-            glVertex3f(R * cos((float)(j + 1) / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
-                       R * sin((float)(j + 1) / q * M_PI / 2.0),
-                       -R * cos((float)(j + 1) / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
-            glVertex3f(R * cos((float)j / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
-                       R * sin((float)j / q * M_PI / 2.0),
-                       -R * cos((float)j / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
-        }
-        glEnd();
-    }
-    for (j = q; j >= 0; j--)
-    {
-        // One latitudinal triangle strip.
-        glBegin(GL_TRIANGLE_STRIP);
-        for (i = 0; i <= p; i++)
-        {
-            glVertex3f(R * cos((float)(j + 1) / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
-                       -R * sin((float)(j + 1) / q * M_PI / 2.0),
-                       -R * cos((float)(j + 1) / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
-            glVertex3f(R * cos((float)j / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
-                       -R * sin((float)j / q * M_PI / 2.0),
-                       -R * cos((float)j / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
-        }
-        glEnd();
-    }
 	glFlush();
 }
 
@@ -215,6 +225,8 @@ void printInteraction(void)
 // Main routine.
 int main(int argc, char** argv)
 {
+    std::cout << "Which shape type do you want\n1) Sphere\n2) Helix\n>> ";
+    std::cin >> userChoice;
 	printInteraction();
 	glutInit(&argc, argv);
 
