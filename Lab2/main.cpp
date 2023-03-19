@@ -154,6 +154,9 @@ void spinDisplayReverse(void)
     glutPostRedisplay();
     //---------------------------------------------------------------------
 }
+void keep_prevtime_updated(){
+    prevTime= glutGet(GLUT_ELAPSED_TIME);
+}
 
 //keyboard & mouse
 void mouse(int button, int state, int x, int y)
@@ -165,6 +168,7 @@ void mouse(int button, int state, int x, int y)
             write code below:
                 1- assign spin logic to be invoked regularly (hint: glutIdleFunc)
             */
+            keep_prevtime_updated();
             glutIdleFunc(spinDisplay);
             //-------------------------------------------
             break;
@@ -175,15 +179,13 @@ void mouse(int button, int state, int x, int y)
             */
             // code here
             //-------------------------------------------
+            keep_prevtime_updated();
             glutIdleFunc(spinDisplayReverse);
             break;
 
         default:
             break;
     }
-}
-void keep_prevtime_updated(){
-    prevTime= glutGet(GLUT_ELAPSED_TIME);
 }
 void keyInput(unsigned char key, int x, int y)
 {
@@ -220,7 +222,7 @@ void keyInput(unsigned char key, int x, int y)
                 1- stop spinning (hint: use NULL)
             */
             // code here
-            glutIdleFunc(keep_prevtime_updated);
+            glutIdleFunc(NULL);
             //------------------------------------
             break;
         default:
@@ -280,7 +282,6 @@ int main(int argc, char** argv)
 {
     glutInit(&argc, argv);
 
-    glutIdleFunc(keep_prevtime_updated);
     glutInitContextVersion(4, 3);
     glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
     printUserInteraction();
