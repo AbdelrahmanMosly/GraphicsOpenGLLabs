@@ -93,7 +93,22 @@ void drawScene(void)
             }
             break;
         case helix:
-            
+            float height = 20.0f;
+            float angle = 0.0f;
+
+            glBegin(GL_LINE_STRIP);
+            for (float z = 0.0f; z <= height; z += 0.05f)
+            {
+                GLfloat x = R * cos(angle);
+                GLfloat y = R* sin(angle);
+
+                glVertex3f(x, y, z);
+
+                angle += 1 / R * 180.0f / M_PI; // increment angle based on pitch
+
+            }
+            glEnd();
+
             break;
     }
 
