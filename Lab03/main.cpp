@@ -56,22 +56,37 @@ void drawScene(void)
 	glColor3f(0.0, 0.0, 0.0);
 
 	// Array of latitudinal triangle strips, each parallel to the equator, stacked one
-	// above the other from the equator to the north pole.
-	for (j = 0; j < q; j++)
-	{
-		// One latitudinal triangle strip.
-		glBegin(GL_TRIANGLE_STRIP);
-		for (i = 0; i <= p; i++)
-		{
-			glVertex3f(R * cos((float)(j + 1) / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
-				R * sin((float)(j + 1) / q * M_PI / 2.0),
-				-R * cos((float)(j + 1) / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
-			glVertex3f(R * cos((float)j / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
-				R * sin((float)j / q * M_PI / 2.0),
-				-R * cos((float)j / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
-		}
-		glEnd();
-	}
+    // above the other from the equator to the north pole.
+    for (j = 0; j < q; j++)
+    {
+        // One latitudinal triangle strip.
+        glBegin(GL_TRIANGLE_STRIP);
+        for (i = 0; i <= p; i++)
+        {
+            glVertex3f(R * cos((float)(j + 1) / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
+                       R * sin((float)(j + 1) / q * M_PI / 2.0),
+                       -R * cos((float)(j + 1) / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
+            glVertex3f(R * cos((float)j / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
+                       R * sin((float)j / q * M_PI / 2.0),
+                       -R * cos((float)j / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
+        }
+        glEnd();
+    }
+    for (j = q; j >= 0; j--)
+    {
+        // One latitudinal triangle strip.
+        glBegin(GL_TRIANGLE_STRIP);
+        for (i = 0; i <= p; i++)
+        {
+            glVertex3f(R * cos((float)(j + 1) / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
+                       -R * sin((float)(j + 1) / q * M_PI / 2.0),
+                       -R * cos((float)(j + 1) / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
+            glVertex3f(R * cos((float)j / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
+                       -R * sin((float)j / q * M_PI / 2.0),
+                       -R * cos((float)j / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
+        }
+        glEnd();
+    }
 	glFlush();
 }
 
