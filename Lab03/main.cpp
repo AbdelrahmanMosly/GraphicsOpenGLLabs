@@ -29,6 +29,7 @@ static float offset = -10;
 static float spinSpeed = 5;
 static float prev_time = 0;
 int userChoice = 0;
+bool wiredFrame=true;
 // Initialization routine.
 
 void setup(void)
@@ -55,7 +56,11 @@ void drawScene(void)
 	glRotatef(Xangle, 1.0, 0.0, 0.0);
 
 	// Hemisphere properties.
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    if(wiredFrame)
+        glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+    else
+        glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+
 	glColor3f(0.0, 0.0, 0.0);
     switch (userChoice) {
         case sphere:
@@ -234,6 +239,14 @@ void keyInput(unsigned char key, int x, int y)
 		offset -= 1;
 		glutPostRedisplay();
 		break;
+    case 'W':
+        wiredFrame=true;
+        glutPostRedisplay();
+        break;
+    case 'w':
+        wiredFrame=false;
+        glutPostRedisplay();
+        break;
 	case ' ':
 		glutIdleFunc(NULL);
 		break;
