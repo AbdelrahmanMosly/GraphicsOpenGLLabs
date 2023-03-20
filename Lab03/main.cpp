@@ -55,7 +55,7 @@ void drawScene(void)
 	glRotatef(Xangle, 1.0, 0.0, 0.0);
 
 	// Hemisphere properties.
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
 	glColor3f(0.0, 0.0, 0.0);
     switch (userChoice) {
         case sphere:
@@ -67,6 +67,10 @@ void drawScene(void)
                 glBegin(GL_TRIANGLE_STRIP);
                 for (i = 0; i <= p; i++)
                 {
+                    float red = (float) rand() / RAND_MAX;
+                    float green = (float) rand() / RAND_MAX;
+                    float blue = (float) rand() / RAND_MAX;
+                    glColor3f(red, green, blue);
                     glVertex3f(R * cos((float)(j + 1) / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
                                R * sin((float)(j + 1) / q * M_PI / 2.0),
                                -R * cos((float)(j + 1) / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
@@ -82,6 +86,10 @@ void drawScene(void)
                 glBegin(GL_TRIANGLE_STRIP);
                 for (i = 0; i <= p; i++)
                 {
+                    float red = (float) rand() / RAND_MAX;
+                    float green = (float) rand() / RAND_MAX;
+                    float blue = (float) rand() / RAND_MAX;
+                    glColor3f(red, green, blue);
                     glVertex3f(R * cos((float)(j + 1) / q * M_PI / 2.0) * cos(2.0 * (float)i / p * M_PI),
                                -R * sin((float)(j + 1) / q * M_PI / 2.0),
                                -R * cos((float)(j + 1) / q * M_PI / 2.0) * sin(2.0 * (float)i / p * M_PI));
@@ -102,9 +110,9 @@ void drawScene(void)
                 float x = R * cos(angle);
                 float y = R* sin(angle);
 
-                float red = (GLfloat) rand() / RAND_MAX;
-                float green = (GLfloat) rand() / RAND_MAX;
-                float blue = (GLfloat) rand() / RAND_MAX;
+                float red = (float) rand() / RAND_MAX;
+                float green = (float) rand() / RAND_MAX;
+                float blue = (float) rand() / RAND_MAX;
                 glColor3f(red, green, blue);
                 glVertex3f(x, y, z);
 
@@ -145,8 +153,10 @@ void spinDisplayReverse() {
 }
 void mouse(int button, int state, int x, int y)
 {
+    prev_time=glutGet(GLUT_ELAPSED_TIME);
 	switch (button)
 	{
+
 	case GLUT_LEFT_BUTTON:
 		if (state == GLUT_DOWN)
 			glutIdleFunc(spinDisplay);
