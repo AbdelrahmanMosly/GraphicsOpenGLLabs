@@ -30,6 +30,10 @@ static float spinSpeed = 5;
 static float prev_time = 0;
 int userChoice = 0;
 bool wiredFrame=true;
+float helixRadius=5.0;
+float helixPitch=1.0;
+float helixVertices=50;
+int helixTurns=5;
 // Initialization routine.
 
 void setup(void)
@@ -106,22 +110,21 @@ void drawScene(void)
             }
             break;
         case helix:
-            float height = 20.0f;
-            float angle = 0.0f;
 
             glBegin(GL_LINE_STRIP);
-            for (float z = 0.0f; z <= height; z += 0.05f)
-            {
-                float x = R * cos(angle);
-                float y = R* sin(angle);
+            for (int i = 0; i < helixVertices; i++) {
+                float t=(float)i/(float)helixVertices;
+                float angle = t * 2.0f * M_PI * helixTurns;
+
+                float x = helixRadius * cos(angle);
+                float y = helixRadius* sin(angle);
+                float z = t*helixPitch*helixTurns;
 
                 float red = (float) rand() / RAND_MAX;
                 float green = (float) rand() / RAND_MAX;
                 float blue = (float) rand() / RAND_MAX;
                 glColor3f(red, green, blue);
                 glVertex3f(x, y, z);
-
-                angle += 1 / R * 180.0f / M_PI; // increment angle based on pitch
 
             }
             glEnd();
@@ -247,6 +250,33 @@ void keyInput(unsigned char key, int x, int y)
         wiredFrame=false;
         glutPostRedisplay();
         break;
+    case 'R':
+        helixRadius+=0.5f;
+        glutPostRedisplay();
+        break;
+    case 'r':
+        if(helixRadius>0.5f)
+            helixRadius-=0.5f;
+        glutPostRedisplay();
+        break;
+    case 'H':
+        helixPitch+=0.1f;
+        glutPostRedisplay();
+        break;
+    case 'h':
+        if(helixPitch>0.2f)
+            helixPitch-=0.1f;
+        glutPostRedisplay();
+        break;
+    case 'N':
+        helixVertices+=10;
+        glutPostRedisplay();
+        break;
+    case 'n':
+        if(helixVertices>10)
+            helixVertices-=5;
+        glutPostRedisplay();
+        break;
 	case ' ':
 		glutIdleFunc(NULL);
 		break;
@@ -261,7 +291,12 @@ void printInteraction(void)
 	std::cout << "Interaction:" << std::endl;
 	std::cout << "Press P/p to increase/decrease the number of longitudinal slices." << std::endl
 		<< "Press Q/q to increase/decrease the number of latitudinal slices." << std::endl
-		<< "Press x, X, y, Y, z, Z to turn the hemisphere." << std::endl;
+		<< "Press x, X, y, Y, z, Z to turn the Object."  << std::endl
+        << "presses W/w, draw sphere in wireframe / draw filled sphere."  << std::endl
+        << "presses R/r,  increase/decrease radius of the helix "<< std::endl
+        << "pressesH/h, increase/decrease pitch of helix. "<< std::endl
+        << "presses N/n, increase/decrease number of vertices used to draw the helix "<< std::endl;
+
 }
 
 // Main routine.
