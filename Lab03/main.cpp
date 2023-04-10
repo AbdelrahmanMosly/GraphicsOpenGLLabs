@@ -132,6 +132,7 @@ void drawScene(void)
             break;
     }
 
+
 	glFlush();
 }
 
@@ -164,7 +165,6 @@ void mouse(int button, int state, int x, int y)
     prev_time=glutGet(GLUT_ELAPSED_TIME);
 	switch (button)
 	{
-
 	case GLUT_LEFT_BUTTON:
 		if (state == GLUT_DOWN)
 			glutIdleFunc(spinDisplay);
@@ -174,7 +174,6 @@ void mouse(int button, int state, int x, int y)
 			glutIdleFunc(spinDisplayReverse);
 
 		break;
-
 	default:
 		break;
 	}
