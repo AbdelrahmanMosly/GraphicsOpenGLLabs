@@ -77,6 +77,19 @@ static GLfloat name_start_end[][4] =
 
         };
 
+
+// Vertex color vectors.
+static float colors[] =
+        {
+                0.0, 0.0, 0.0,
+                0.0, 0.0, 1.0,
+                0.0, 1.0, 0.0,
+                0.0, 1.0, 1.0,
+                1.0, 0.0, 0.0,
+                1.0, 0.0, 1.0,
+                1.0, 1.0, 0.0,
+                1.0, 1.0, 1.0
+        };
 vector<GLfloat> DDA(float x1, float y1, float x2, float y2) {
 
     x1 += DDA_XOFFSET;
@@ -179,7 +192,19 @@ static unsigned int vao[2]; // Array of VAO ids.
 void drawScene(void) {
     glClear(GL_COLOR_BUFFER_BIT);
 
-    // Draw annulus.
+
+
+    // Get a pointer to the vertex buffer.
+    float* bufferData = (float*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
+
+    // Randomly change the color values.
+    for (int i = 0; i < pointsBresenhamCtr; i++)
+        bufferData[(pointsBresenhamCtr) + i] = (float)rand() / (float)RAND_MAX;
+
+    // Release the vertex buffer.
+    glUnmapBuffer(GL_ARRAY_BUFFER);
+
+
     glBindVertexArray(vao[DDA_INDEX]);
     glPointSize(5.0f);
     glDrawArrays(GL_POINTS, 0, pointsDDACtr / 3);
@@ -191,6 +216,13 @@ void drawScene(void) {
 
     glFlush();
 }
+// Timer function.
+void animate(int someValue)
+{
+    glutPostRedisplay();
+    glutTimerFunc(500, animate, 1);
+}
+
 void setupDDA(){
     vector<GLfloat> nameDDA;
 
@@ -244,14 +276,22 @@ void setupBresenham(){
 
     // Bind vertex buffer and reserve space.
     glBindBuffer(GL_ARRAY_BUFFER, buffer[VERTICES]);
-    glBufferData(GL_ARRAY_BUFFER, nameBresenham.size() * sizeof(GLfloat), nameBresenham.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER, nameBresenham.size() * sizeof(GLfloat)+ nameBresenham.size() * sizeof(GLfloat), nameBresenham.data(), GL_STATIC_DRAW);
 
+    // Copy vertex coordinates data into first half of vertex buffer.
+    glBufferSubData(GL_ARRAY_BUFFER, 0,  nameBresenham.size() * sizeof(GLfloat), nameBresenham.data());
+
+    // Copy vertex color data into second half of vertex buffer.
+    glBufferSubData(GL_ARRAY_BUFFER, nameBresenham.size() * sizeof(GLfloat), nameBresenham.size() * sizeof(GLfloat), colors);
     // Enable two vertex arrays: co-ordinates and color.
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
 
     // Specify vertex and color pointers to the start of the respective data.
     glVertexPointer(3, GL_FLOAT, 0, 0);
+    glColorPointer(3, GL_FLOAT, 0, (void *)(nameBresenham.size() * sizeof(GLfloat)));
+
+    glutTimerFunc(5, animate, 1);
 }
 
 // Initialization routine.
@@ -302,6 +342,8 @@ void resize(int w, int h) {
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
+
+
 
 // Keyboard input processing routine.
 void keyInput(unsigned char key, int x, int y) {
