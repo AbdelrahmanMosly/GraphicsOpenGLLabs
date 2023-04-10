@@ -12,38 +12,92 @@ using namespace std;
 #define DDA_INDEX 0
 #define BRESENHAM_INDEX 1
 
-static float name_start_end[] =
+#define DDA_YOFFSET 5
+#define DDA_XOFFSET 5
+
+
+int pointsCtr=0;
+static GLfloat name_start_end[][4] =
         {
-                30.0, 30.0, 0.0,
-                10.0, 10.0, 0.0,
-                70.0, 30.0, 0.0,
-                90.0, 10.0, 0.0,
-                70.0, 70.0, 0.0,
-                90.0, 90.0, 0.0,
-                30.0, 70.0, 0.0,
-                10.0, 90.0, 0.0
+                {0, 0, 5, 10},
+                { 5, 10, 10, 0},
+                {4, 5, 7, 5}, //A
+
+                {12, 0, 12, 10},
+                {12, 0, 17, 0},
+                {12, 5, 17, 5},
+                {17, 0, 17, 5}, //b
+
+                {19, 0, 19, 5},
+                {19, 0, 24, 0},
+                {19, 5, 24, 5},
+                {24, 0, 24, 10}, //d
+
+                {26, 0, 26, 10},
+                {26, 0, 31, 0},
+                {26, 5, 31, 5},
+                {26, 10, 31, 10},
+                {31, 10, 31, 5},//e
+
+                {33, 0, 33, 10}, // l
+
+                {35, 0, 35, 10},
+                {35, 9, 40, 9}, // r
+
+                {42, 5, 42, 0},
+                {42, 0, 47, 0},
+                {42, 5, 47, 5},
+                {42, 10, 47, 10},
+                {47, 0, 47, 10},//a
+
+                {49, 0, 49, 10},
+                {49, 5, 54, 5},
+                {54, 0, 54, 5}, // h
+
+
+                {56, 0, 56, 5},
+                {56, 5, 61, 5},
+                {61, 0, 61, 5},
+                {61, 5, 66, 5},
+                {66, 0, 66, 5},// m
+
+                {68, 5, 68, 0},
+                {68, 0, 73, 0},
+                {68, 5, 73, 5},
+                {68, 10, 73, 10},
+                {73, 0, 73, 10}, // a
+
+                {75, 0, 75, 5},
+                {75, 5, 80, 5},
+                {80, 0, 80, 5},//n
+
         };
+
 //Define DDA
-vector<GLfloat> DDA(int x1,int y1, int x2, int y2) {
+vector<GLfloat> DDA(float x1, float y1, float x2, float y2) {
+
+    x1+=DDA_XOFFSET;
+    y1+=DDA_YOFFSET;
+    x2+=DDA_XOFFSET;
+    y2+=DDA_YOFFSET;
     int dx = x2 - x1;
     int dy = y2 - y1;
-    int steps= max(dx,dy);
+    float steps = max(abs(dx), abs(dy));
 
     vector<GLfloat> vertices((steps + 1) * 3);
 
-    float x_inc=dx/steps;
-    float y_inc=dx/steps;
+    float x_inc = dx / steps;
+    float y_inc = dy / steps;
 
-    for(int i=0;i<=steps;i++)
-    {
-        int x=round(x1);
-        int y=round(y1);
-        vertices[i*3]=x; //x
-        vertices[i*3+1]=y; //y
-        vertices[i*3+2]=0; //z
+    for (int i = 0; i <= steps; i++) {
+        int x = round(x1);
+        int y = round(y1);
+        vertices[i * 3] = x; //x
+        vertices[i * 3 + 1] = y; //y
+        vertices[i * 3 + 2] = 0; //z
 
-        x1+=x_inc;
-        y1+=y_inc;
+        x1 += x_inc;
+        y1 += y_inc;
     }
     return vertices;
 }
@@ -55,29 +109,35 @@ static unsigned int vao[2]; // Array of VAO ids.
 // End globals.
 
 // Drawing routine.
-void drawScene(void)
-{
+void drawScene(void) {
     glClear(GL_COLOR_BUFFER_BIT);
 
     // Draw annulus.
     glBindVertexArray(vao[DDA_INDEX]);
     glPointSize(5.0f);
-    glDrawArrays(GL_POINTS,0, 5);
-
-//    // Draw triangle.
-//    glBindVertexArray(vao[TRIANGLE]);
-//    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_POINTS, 0, pointsCtr/3);
 
     glFlush();
 }
 
 // Initialization routine.
-void setup(void)
-{
+void setup(void) {
+    vector<GLfloat> name;
+
+    int size_name_points = sizeof(name_start_end) / sizeof(name_start_end[0]);
+    for (int i = 0; i < size_name_points; i++) {
+        std::vector<GLfloat> line = DDA(name_start_end[i][0], name_start_end[i][1],
+                                               name_start_end[i][2], name_start_end[i][3]);
+        // Loop through the returned vector and add each element to the final result vector
+        for (int j = 0; j < line.size(); j++) {
+            pointsCtr++;
+            name.push_back(line[j]);
+        }
+    }
 
 
-    vector<GLfloat> name= DDA(0,0,5,5);
-    
+
+
     glClearColor(1.0, 1.0, 1.0, 0.0);
 
     glGenVertexArrays(2, vao); // Generate VAO ids.
@@ -135,8 +195,7 @@ void setup(void)
 }
 
 // OpenGL window reshape routine.
-void resize(int w, int h)
-{
+void resize(int w, int h) {
     glViewport(0, 0, w, h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -146,10 +205,8 @@ void resize(int w, int h)
 }
 
 // Keyboard input processing routine.
-void keyInput(unsigned char key, int x, int y)
-{
-    switch (key)
-    {
+void keyInput(unsigned char key, int x, int y) {
+    switch (key) {
         case 27:
             exit(0);
             break;
@@ -159,8 +216,7 @@ void keyInput(unsigned char key, int x, int y)
 }
 
 // Main routine.
-int main(int argc, char **argv)
-{
+int main(int argc, char **argv) {
     glutInit(&argc, argv);
 
     glutInitContextVersion(4, 3);
