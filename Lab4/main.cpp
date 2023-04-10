@@ -62,7 +62,7 @@ void drawScene(void)
     // Draw annulus.
     glBindVertexArray(vao[DDA_INDEX]);
     glPointSize(5.0f);
-    glDrawElements(GL_POINTS, 5, GL_UNSIGNED_INT, 0);
+    glDrawArrays(GL_POINTS,0, 5);
 
 //    // Draw triangle.
 //    glBindVertexArray(vao[TRIANGLE]);
@@ -77,9 +77,7 @@ void setup(void)
 
 
     vector<GLfloat> name= DDA(0,0,5,5);
-
-
-
+    
     glClearColor(1.0, 1.0, 1.0, 0.0);
 
     glGenVertexArrays(2, vao); // Generate VAO ids.
