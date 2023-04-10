@@ -62,11 +62,7 @@ void drawScene(void)
     // Draw annulus.
     glBindVertexArray(vao[DDA_INDEX]);
     glPointSize(5.0f);
-    glDrawElements(GL_POINTS, 5, GL_UNSIGNED_INT, 0);
-
-//    // Draw triangle.
-//    glBindVertexArray(vao[TRIANGLE]);
-//    glDrawArrays(GL_TRIANGLES, 0, 3);
+    glDrawArrays(GL_POINTS,0,5);
 
     glFlush();
 }
@@ -77,6 +73,13 @@ void setup(void)
 
 
     vector<GLfloat> name= DDA(0,0,5,5);
+
+
+    GLfloat nameArray[name.size()];
+
+    for(int i=0;i<name.size();i++)
+        nameArray[i]=name[i];
+
 
 
 
@@ -90,50 +93,21 @@ void setup(void)
 
     // Bind vertex buffer and reserve space.
     glBindBuffer(GL_ARRAY_BUFFER, buffer[VERTICES]);
-    glBufferData(GL_ARRAY_BUFFER, name.size() * sizeof(GLfloat), name.data(), GL_STATIC_DRAW);
+    glBufferData(GL_ARRAY_BUFFER,  sizeof(nameArray) /*+ sizeof(colors1)*/, NULL, GL_STATIC_DRAW);
 
-//    // Copy vertex coordinates data into first half of vertex buffer.
-//    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices1), vertices1);
-//
-//    // Copy vertex color data into second half of vertex buffer.
+    // Copy vertex coordinates data into first half of vertex buffer.
+    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(nameArray), nameArray);
+
+    // Copy vertex color data into second half of vertex buffer.
 //    glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices1), sizeof(colors1), colors1);
-//
-//    // Bind and fill indices buffer.
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer[INDICES]);
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(stripIndices), stripIndices, GL_STATIC_DRAW);
 
-    // Enable two vertex arrays: co-ordinates and color.
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
 
     // Specify vertex and color pointers to the start of the respective data.
     glVertexPointer(3, GL_FLOAT, 0, 0);
+
 //    glColorPointer(3, GL_FLOAT, 0, (void *)(sizeof(vertices1)));
-    // END bind VAO id vao[ANNULUS].
-//
-//    // BEGIN bind VAO id vao[TRIANGLE] to the set of vertex array calls following.
-//    glBindVertexArray(vao[TRIANGLE]);
-//
-//    glGenBuffers(1, buffer);
-//
-//    // Bind vertex buffer and reserve space.
-//    glBindBuffer(GL_ARRAY_BUFFER, buffer[VERTICES]);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2) + sizeof(colors2), NULL, GL_STATIC_DRAW);
-//
-//    // Copy vertex coordinates data into first half of vertex buffer.
-//    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices2), vertices2);
-//
-//    // Copy vertex color data into second half of vertex buffer.
-//    glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices2), sizeof(colors2), colors2);
-//
-//    // Enable two vertex arrays: co-ordinates and color.
-//    glEnableClientState(GL_VERTEX_ARRAY);
-//    glEnableClientState(GL_COLOR_ARRAY);
-//
-//    // Specify vertex and color pointers to the start of the respective data.
-//    glVertexPointer(3, GL_FLOAT, 0, 0);
-//    glColorPointer(3, GL_FLOAT, 0, (void *)(sizeof(vertices2)));
-    // END bind VAO id vao[TRIANGLE].
 }
 
 // OpenGL window reshape routine.
