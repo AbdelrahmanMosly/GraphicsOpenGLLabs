@@ -8,7 +8,6 @@ using namespace std;
 
 
 #define VERTICES 0
-#define INDICES 1
 #define DDA_INDEX 0
 #define BRESENHAM_INDEX 1
 
@@ -19,7 +18,8 @@ using namespace std;
 #define BRESENHAM_YOFFSET 25
 
 
-int pointsCtr = 0;
+int pointsDDACtr = 0;
+int pointsBresenhamCtr = 0;
 static GLfloat name_start_end[][4] =
         {
                 {0,  0,  5,  10},
@@ -182,13 +182,16 @@ void drawScene(void) {
     // Draw annulus.
     glBindVertexArray(vao[DDA_INDEX]);
     glPointSize(5.0f);
-    glDrawArrays(GL_POINTS, 0, pointsCtr / 3);
+    glDrawArrays(GL_POINTS, 0, pointsDDACtr / 3);
+
+
+    glBindVertexArray(vao[BRESENHAM_INDEX]);
+    glPointSize(5.0f);
+    glDrawArrays(GL_POINTS, 0, pointsBresenhamCtr / 3);
 
     glFlush();
 }
-
-// Initialization routine.
-void setup(void) {
+void setupDDA(){
     vector<GLfloat> nameDDA;
 
     int size_name_points = sizeof(name_start_end) / sizeof(name_start_end[0]);
@@ -197,7 +200,7 @@ void setup(void) {
                                         name_start_end[i][2], name_start_end[i][3]);
         // Loop through the returned vector and add each element to the final result vector
         for (int j = 0; j < line.size(); j++) {
-            pointsCtr++;
+            pointsDDACtr++;
             nameDDA.push_back(line[j]);
         }
     }
@@ -209,12 +212,54 @@ void setup(void) {
 
     glBindVertexArray(vao[DDA_INDEX]);
 
-    glGenBuffers(2, buffer);
+    glGenBuffers(1, buffer);
 
     // Bind vertex buffer and reserve space.
     glBindBuffer(GL_ARRAY_BUFFER, buffer[VERTICES]);
     glBufferData(GL_ARRAY_BUFFER, nameDDA.size() * sizeof(GLfloat), nameDDA.data(), GL_STATIC_DRAW);
 
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+
+    // Specify vertex and color pointers to the start of the respective data.
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+}
+void setupBresenham(){
+
+    vector<GLfloat> nameBresenham;
+
+    int size_name_points = sizeof(name_start_end) / sizeof(name_start_end[0]);
+    for (int i = 0; i < size_name_points; i++) {
+        std::vector<GLfloat> line = bresenham(name_start_end[i][0], name_start_end[i][1],
+                                              name_start_end[i][2], name_start_end[i][3]);
+        // Loop through the returned vector and add each element to the final result vector
+        for (int j = 0; j < line.size(); j++) {
+            pointsBresenhamCtr++;
+            nameBresenham.push_back(line[j]);
+        }
+    }
+    glBindVertexArray(vao[BRESENHAM_INDEX]);
+
+    glGenBuffers(1, buffer);
+
+    // Bind vertex buffer and reserve space.
+    glBindBuffer(GL_ARRAY_BUFFER, buffer[VERTICES]);
+    glBufferData(GL_ARRAY_BUFFER, nameBresenham.size() * sizeof(GLfloat), nameBresenham.data(), GL_STATIC_DRAW);
+
+    // Enable two vertex arrays: co-ordinates and color.
+    glEnableClientState(GL_VERTEX_ARRAY);
+    glEnableClientState(GL_COLOR_ARRAY);
+
+    // Specify vertex and color pointers to the start of the respective data.
+    glVertexPointer(3, GL_FLOAT, 0, 0);
+}
+
+// Initialization routine.
+void setup(void) {
+
+    setupDDA();
+
+    setupBresenham();
 //    // Copy vertex coordinates data into first half of vertex buffer.
 //    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices1), vertices1);
 //
@@ -226,35 +271,24 @@ void setup(void) {
 //    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(stripIndices), stripIndices, GL_STATIC_DRAW);
 
     // Enable two vertex arrays: co-ordinates and color.
-    glEnableClientState(GL_VERTEX_ARRAY);
-    glEnableClientState(GL_COLOR_ARRAY);
 
-    // Specify vertex and color pointers to the start of the respective data.
-    glVertexPointer(3, GL_FLOAT, 0, 0);
 //    glColorPointer(3, GL_FLOAT, 0, (void *)(sizeof(vertices1)));
     // END bind VAO id vao[ANNULUS].
 //
 //    // BEGIN bind VAO id vao[TRIANGLE] to the set of vertex array calls following.
-//    glBindVertexArray(vao[TRIANGLE]);
-//
-//    glGenBuffers(1, buffer);
-//
-//    // Bind vertex buffer and reserve space.
-//    glBindBuffer(GL_ARRAY_BUFFER, buffer[VERTICES]);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2) + sizeof(colors2), NULL, GL_STATIC_DRAW);
-//
+
+
+
+
 //    // Copy vertex coordinates data into first half of vertex buffer.
 //    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices2), vertices2);
 //
 //    // Copy vertex color data into second half of vertex buffer.
 //    glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices2), sizeof(colors2), colors2);
 //
-//    // Enable two vertex arrays: co-ordinates and color.
-//    glEnableClientState(GL_VERTEX_ARRAY);
-//    glEnableClientState(GL_COLOR_ARRAY);
-//
-//    // Specify vertex and color pointers to the start of the respective data.
-//    glVertexPointer(3, GL_FLOAT, 0, 0);
+
+
+
 //    glColorPointer(3, GL_FLOAT, 0, (void *)(sizeof(vertices2)));
     // END bind VAO id vao[TRIANGLE].
 }
