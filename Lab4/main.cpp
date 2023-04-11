@@ -7,7 +7,6 @@
 using namespace std;
 
 
-#define VERTICES 0
 #define DDA_INDEX 0
 #define BRESENHAM_INDEX 1
 
@@ -17,7 +16,7 @@ using namespace std;
 #define BRESENHAM_XOFFSET 5
 #define BRESENHAM_YOFFSET 25
 
-
+int userChoice = 0;
 int pointsDDACtr = 0;
 int pointsBresenhamCtr = 0;
 static GLfloat name_start_end[][4] =
@@ -78,18 +77,6 @@ static GLfloat name_start_end[][4] =
         };
 
 
-// Vertex color vectors.
-static float colors[] =
-        {
-                0.0, 0.0, 0.0,
-                0.0, 0.0, 1.0,
-                0.0, 1.0, 0.0,
-                0.0, 1.0, 1.0,
-                1.0, 0.0, 0.0,
-                1.0, 0.0, 1.0,
-                1.0, 1.0, 0.0,
-                1.0, 1.0, 1.0
-        };
 vector<GLfloat> DDA(float x1, float y1, float x2, float y2) {
 
     x1 += DDA_XOFFSET;
@@ -183,36 +170,47 @@ vector<GLfloat> bresenham(int x1, int y1, int x2, int y2) {
 
 }
 
-static unsigned int buffer[2]; // Array of buffer ids.
+static GLuint buffer; // Array of buffer ids.
 
-static unsigned int vao[2]; // Array of VAO ids.
+static GLuint vao; // Array of VAO ids.
+
+int lastGradientIndex=0;
 // End globals.
-
 // Drawing routine.
 void drawScene(void) {
     glClear(GL_COLOR_BUFFER_BIT);
 
-
-
     // Get a pointer to the vertex buffer.
     float* bufferData = (float*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 
-    // Randomly change the color values.
-    for (int i = 0; i < pointsBresenhamCtr; i++)
-        bufferData[(pointsBresenhamCtr) + i] = (float)rand() / (float)RAND_MAX;
+    int pointsCounter= userChoice == DDA_INDEX?pointsDDACtr:pointsBresenhamCtr;
+
+    float currColor=3.0/pointsCounter;
+    for (int i = lastGradientIndex/3; i < pointsCounter/3; i++) {
+        bufferData[(pointsCounter) + 3*i] = currColor;
+        bufferData[(pointsCounter) + 3*i+1] = 1;
+        bufferData[(pointsCounter) + 3*i+2] = 1;
+        currColor+=3.0/pointsCounter;
+    }
+    for (int i = 0; i < lastGradientIndex/3; i++) {
+        bufferData[(pointsCounter) + 3*i] = currColor;
+        bufferData[(pointsCounter) + 3*i+1] = 1;
+        bufferData[(pointsCounter) + 3*i+2] = 1;
+        currColor+=3.0/pointsCounter;
+    }
+
+    lastGradientIndex=lastGradientIndex%pointsCounter;
+    lastGradientIndex+=30;
+
 
     // Release the vertex buffer.
     glUnmapBuffer(GL_ARRAY_BUFFER);
 
 
-    glBindVertexArray(vao[DDA_INDEX]);
+    glBindVertexArray(vao);
     glPointSize(5.0f);
-    glDrawArrays(GL_POINTS, 0, pointsDDACtr / 3);
+    glDrawArrays(GL_POINTS, 0, pointsCounter / 3);
 
-
-    glBindVertexArray(vao[BRESENHAM_INDEX]);
-    glPointSize(5.0f);
-    glDrawArrays(GL_POINTS, 0, pointsBresenhamCtr / 3);
 
     glFlush();
 }
@@ -220,7 +218,7 @@ void drawScene(void) {
 void animate(int someValue)
 {
     glutPostRedisplay();
-    glutTimerFunc(500, animate, 1);
+    glutTimerFunc(50, animate, 1);
 }
 
 void setupDDA(){
@@ -237,24 +235,27 @@ void setupDDA(){
         }
     }
 
+    float colors[pointsDDACtr];
 
-    glClearColor(1.0, 1.0, 1.0, 0.0);
+    glBindVertexArray(vao);
 
-    glGenVertexArrays(2, vao); // Generate VAO ids.
-
-    glBindVertexArray(vao[DDA_INDEX]);
-
-    glGenBuffers(1, buffer);
 
     // Bind vertex buffer and reserve space.
-    glBindBuffer(GL_ARRAY_BUFFER, buffer[VERTICES]);
-    glBufferData(GL_ARRAY_BUFFER, nameDDA.size() * sizeof(GLfloat), nameDDA.data(), GL_STATIC_DRAW);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
+    glBufferData(GL_ARRAY_BUFFER, nameDDA.size() * sizeof(GLfloat)+ nameDDA.size() * sizeof(GLfloat), nameDDA.data(), GL_STATIC_DRAW);
 
+    // Copy vertex coordinates data into first half of vertex buffer.
+    glBufferSubData(GL_ARRAY_BUFFER, 0,  nameDDA.size() * sizeof(GLfloat), nameDDA.data());
+
+    glBufferSubData(GL_ARRAY_BUFFER, nameDDA.size() * sizeof(GLfloat), nameDDA.size() * sizeof(GLfloat), colors);
+    // Enable two vertex arrays: co-ordinates and color.
     glEnableClientState(GL_VERTEX_ARRAY);
     glEnableClientState(GL_COLOR_ARRAY);
 
     // Specify vertex and color pointers to the start of the respective data.
     glVertexPointer(3, GL_FLOAT, 0, 0);
+    glColorPointer(3, GL_FLOAT, 0, (void *)(nameDDA.size() * sizeof(GLfloat)));
+
 }
 void setupBresenham(){
 
@@ -270,12 +271,12 @@ void setupBresenham(){
             nameBresenham.push_back(line[j]);
         }
     }
-    glBindVertexArray(vao[BRESENHAM_INDEX]);
+    float colors[pointsBresenhamCtr];
 
-    glGenBuffers(1, buffer);
+    glBindVertexArray(vao);
 
     // Bind vertex buffer and reserve space.
-    glBindBuffer(GL_ARRAY_BUFFER, buffer[VERTICES]);
+    glBindBuffer(GL_ARRAY_BUFFER, buffer);
     glBufferData(GL_ARRAY_BUFFER, nameBresenham.size() * sizeof(GLfloat)+ nameBresenham.size() * sizeof(GLfloat), nameBresenham.data(), GL_STATIC_DRAW);
 
     // Copy vertex coordinates data into first half of vertex buffer.
@@ -291,46 +292,19 @@ void setupBresenham(){
     glVertexPointer(3, GL_FLOAT, 0, 0);
     glColorPointer(3, GL_FLOAT, 0, (void *)(nameBresenham.size() * sizeof(GLfloat)));
 
-    glutTimerFunc(5, animate, 1);
+
 }
 
 // Initialization routine.
 void setup(void) {
 
-    setupDDA();
-
-    setupBresenham();
-//    // Copy vertex coordinates data into first half of vertex buffer.
-//    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices1), vertices1);
-//
-//    // Copy vertex color data into second half of vertex buffer.
-//    glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices1), sizeof(colors1), colors1);
-//
-//    // Bind and fill indices buffer.
-//    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, buffer[INDICES]);
-//    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(stripIndices), stripIndices, GL_STATIC_DRAW);
-
-    // Enable two vertex arrays: co-ordinates and color.
-
-//    glColorPointer(3, GL_FLOAT, 0, (void *)(sizeof(vertices1)));
-    // END bind VAO id vao[ANNULUS].
-//
-//    // BEGIN bind VAO id vao[TRIANGLE] to the set of vertex array calls following.
+    glClearColor(0.5, 0.5, 0.5, 0.0);
+    glGenVertexArrays(1, &vao);
+    glGenBuffers(1, &buffer);
+    userChoice==DDA_INDEX? setupDDA():setupBresenham();
 
 
-
-
-//    // Copy vertex coordinates data into first half of vertex buffer.
-//    glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(vertices2), vertices2);
-//
-//    // Copy vertex color data into second half of vertex buffer.
-//    glBufferSubData(GL_ARRAY_BUFFER, sizeof(vertices2), sizeof(colors2), colors2);
-//
-
-
-
-//    glColorPointer(3, GL_FLOAT, 0, (void *)(sizeof(vertices2)));
-    // END bind VAO id vao[TRIANGLE].
+    glutTimerFunc(5, animate, 1);
 }
 
 // OpenGL window reshape routine.
@@ -355,11 +329,21 @@ void keyInput(unsigned char key, int x, int y) {
             break;
     }
 }
+void userInterAction(void)
+{
+    std::cout << "choose algorithm:" << std::endl
+    << "DDA enters 0." << std::endl
+    << "Bresenham enters 1." << std::endl;
 
+    std::cin >> userChoice;
+
+}
 // Main routine.
 int main(int argc, char **argv) {
-    glutInit(&argc, argv);
 
+    userInterAction();
+
+    glutInit(&argc, argv);
     glutInitContextVersion(4, 3);
     glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
 
