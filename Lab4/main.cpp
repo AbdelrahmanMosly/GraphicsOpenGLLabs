@@ -7,8 +7,7 @@
 using namespace std;
 
 
-#define DDA_INDEX 0
-#define BRESENHAM_INDEX 1
+#define DDA_CHOICE 0
 
 #define DDA_XOFFSET 5
 #define DDA_YOFFSET 5
@@ -83,16 +82,6 @@ vector<GLfloat> DDA(float x1, float y1, float x2, float y2) {
     y1 += DDA_YOFFSET;
     x2 += DDA_XOFFSET;
     y2 += DDA_YOFFSET;
-    if(x2<x1)
-    {
-        int temp=x1;
-        x1=x2;
-        x2=temp;
-        temp=y1;
-        y1=y2;
-        y2=temp;
-    }
-
 
     int dx = x2 - x1;
     int dy = y2 - y1;
@@ -183,7 +172,7 @@ void drawScene(void) {
     // Get a pointer to the vertex buffer.
     float* bufferData = (float*)glMapBuffer(GL_ARRAY_BUFFER, GL_WRITE_ONLY);
 
-    int pointsCounter= userChoice == DDA_INDEX?pointsDDACtr:pointsBresenhamCtr;
+    int pointsCounter= userChoice == DDA_CHOICE?pointsDDACtr:pointsBresenhamCtr;
 
     float currColor=3.0/pointsCounter;
     for (int i = lastGradientIndex/3; i < pointsCounter/3; i++) {
@@ -206,13 +195,11 @@ void drawScene(void) {
     // Release the vertex buffer.
     glUnmapBuffer(GL_ARRAY_BUFFER);
 
-
     glBindVertexArray(vao);
     glPointSize(5.0f);
     glDrawArrays(GL_POINTS, 0, pointsCounter / 3);
 
-
-    glFlush();
+    glutSwapBuffers();
 }
 // Timer function.
 void animate(int someValue)
@@ -301,7 +288,7 @@ void setup(void) {
     glClearColor(0.5, 0.5, 0.5, 0.0);
     glGenVertexArrays(1, &vao);
     glGenBuffers(1, &buffer);
-    userChoice==DDA_INDEX? setupDDA():setupBresenham();
+    userChoice==DDA_CHOICE? setupDDA():setupBresenham();
 
 
     glutTimerFunc(5, animate, 1);
@@ -350,7 +337,7 @@ int main(int argc, char **argv) {
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
     glutInitWindowSize(500, 500);
     glutInitWindowPosition(100, 100);
-    glutCreateWindow("squareAnnulusAndTriangleVAO.cpp");
+    glutCreateWindow("DDAandBresenham.cpp");
     glutDisplayFunc(drawScene);
     glutReshapeFunc(resize);
     glutKeyboardFunc(keyInput);
