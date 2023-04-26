@@ -7,6 +7,8 @@
 #include <GL/glew.h>
 #include <GL/freeglut.h>
 
+
+
 // Globals.
 static unsigned int aCylinder; // List index.
 static float Xangle = 0.0, Yangle = 0.0, Zangle = 0.0; // Angles to rotate
@@ -14,6 +16,10 @@ bool wiredFrame=true;
 const int N = 20; // number of vertices around the circumference
 const float R = 5.0f; // radius of the cylinder
 const float H = 100.0f; // height of the cylinder
+
+#define CHAIR_X_POS 0
+#define CHAIR_Y_POS -20
+#define CHAIR_Z_POS -175
 
 // Initialization routine.
 void setup(void)
@@ -57,52 +63,65 @@ void setup(void)
 
     glClearColor(1.0, 1.0, 1.0, 0.0);
 }
+void renderLeg1(){
+    glPushMatrix();
+
+    glTranslatef(30.0, 0, -20);
+    glRotatef(90,1,0,0);
+    glRotatef(20,0,1,0);
+    glRotatef(20,1,0,1);
+    glCallList(aCylinder);
+    glPopMatrix();
+
+}void renderLeg2(){
+    glPushMatrix();
+    glTranslatef(-30.0, 0, -20);
+    glRotatef(90,1,0,0);
+    glRotatef(-20,0,1,0);
+    glRotatef(20,1,0,1);
+    glCallList(aCylinder);
+    glPopMatrix();
+
+}void renderLeg3(){
+    glPushMatrix();
+    glColor3f(1.0, 0.0, 1.0);
+    glTranslatef(0.0, 0.0, 30.0);
+    glRotatef(90,1,0,0);
+    glRotatef(-20,1,0,1);
+    glCallList(aCylinder);
+    glPopMatrix();
+
+}
+void renderSeat() {
+    glPushMatrix();
+
+    glTranslatef(0.0, H/2 , 0);
+    glScalef(8, 0.1, 8);
+    glRotatef(90, 1, 0, 0);
+    glCallList(aCylinder);
+    glPopMatrix();
+}
 
 // Drawing routine.
 void drawScene(void)
-{   if(wiredFrame)
+{
+    if(wiredFrame)
         glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
     else
         glPolygonMode(GL_FRONT_AND_BACK, GL_FILL);
+    glLoadIdentity();
     glClear(GL_COLOR_BUFFER_BIT);
     glColor3f(1.0, 1.0, 1.0);
 
+    glColor3f(1.0, 0.0, 0.0);
+    glTranslatef(CHAIR_X_POS, CHAIR_Y_POS, CHAIR_Z_POS);
     glRotatef(Zangle, 0.0, 0.0, 1.0);
     glRotatef(Yangle, 0.0, 1.0, 0.0);
     glRotatef(Xangle, 1.0, 0.0, 0.0);
-
-    glColor3f(1.0, 0.0, 0.0);
-    glPushMatrix();
-
-    glTranslatef(35.0, 0.0, -200.0);
-    glRotatef(90,1,0,0);
-    glRotatef(10,0,1,0);
-    glCallList(aCylinder); // Execute display list.
-    glPopMatrix();
-
-    glColor3f(1.0, 0.0, 0.0);
-    glPushMatrix();
-    glTranslatef(-35.0, 0.0, -200.0);
-    glRotatef(90,1,0,0);
-    glRotatef(-10,0,1,0);
-    glCallList(aCylinder); // Execute display list.
-    glPopMatrix();
-
-    glColor3f(1.0, 0.0, 0.0);
-    glPushMatrix();
-    glTranslatef(0.0, 0.0, -150.0);
-    glRotatef(90,1,0,0);
-    glRotatef(10,1,0,0);
-    glCallList(aCylinder); // Execute display list.
-    glPopMatrix();
-
-    glPushMatrix();
-    glTranslatef(0.0, H/2+5, -175.0);
-    glScalef(8,0.1,8);
-    glRotatef(90,1,0,0);
-    glCallList(aCylinder); // Execute display list.
-    glPopMatrix();
-
+    renderLeg1();
+    renderLeg2();
+    renderLeg3();
+    renderSeat();
     glFlush();
 }
 
