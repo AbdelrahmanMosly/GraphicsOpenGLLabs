@@ -84,7 +84,6 @@ void renderLeg1(){
 
 }void renderLeg3(){
     glPushMatrix();
-    glColor3f(1.0, 0.0, 1.0);
     glTranslatef(0.0, 0.0, 30.0);
     glRotatef(90,1,0,0);
     glRotatef(-20,1,0,1);
@@ -95,6 +94,7 @@ void renderLeg1(){
 void renderSeat() {
     glPushMatrix();
 
+    glColor3f(1.0, 0.0, 0.0);
     glTranslatef(0.0, H/2 , 0);
     glScalef(8, 0.1, 8);
     glRotatef(90, 1, 0, 0);
@@ -113,7 +113,7 @@ void drawScene(void)
     glClear(GL_COLOR_BUFFER_BIT);
     glColor3f(1.0, 1.0, 1.0);
 
-    glColor3f(1.0, 0.0, 0.0);
+    glColor3f(0.0, 0.0, 0.0);
     glTranslatef(CHAIR_X_POS, CHAIR_Y_POS, CHAIR_Z_POS);
     glRotatef(Zangle, 0.0, 0.0, 1.0);
     glRotatef(Yangle, 0.0, 1.0, 0.0);
