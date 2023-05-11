@@ -257,6 +257,15 @@ Lab5_IS_TOP_LEVEL:STATIC=ON
 //Value Computed by CMake
 Lab5_SOURCE_DIR:STATIC=D:/College/term6/computer graphics/labs/GraphicsOpenGLLabs/Lab5
 
+//Value Computed by CMake
+untitled_BINARY_DIR:STATIC=D:/College/term6/computer graphics/labs/GraphicsOpenGLLabs/Lab5/cmake-build-debug
+
+//Value Computed by CMake
+untitled_IS_TOP_LEVEL:STATIC=ON
+
+//Value Computed by CMake
+untitled_SOURCE_DIR:STATIC=D:/College/term6/computer graphics/labs/GraphicsOpenGLLabs/Lab5
+
 
 ########################
 # INTERNAL cache entries

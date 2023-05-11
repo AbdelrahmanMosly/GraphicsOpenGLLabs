@@ -24,13 +24,10 @@ const float H = 100.0f; // height of the cylinder
 // Initialization routine.
 void setup(void)
 {
-
-
     aCylinder = glGenLists(1); // Return a list index.
-
     // Begin create a display list.
     glNewList(aCylinder, GL_COMPILE);
-
+    //borders
     glBegin(GL_TRIANGLE_STRIP);
     for (int i = 0; i <= N; i++) {
         float x = R * cos(2.0f * M_PI * i / N);
@@ -40,8 +37,8 @@ void setup(void)
         glVertex3f(x, y, z + H);
     }
     glEnd();
+    //lower circle
     glBegin(GL_TRIANGLE_FAN);
-    glNormal3f(0.0f, 0.0f, -1.0f);
     glVertex3f(0.0f, 0.0f, -H / 2.0f);
     for (int i = 0; i <= N; i++) {
         float x = R * cos(2.0f * M_PI * i / N);
@@ -49,8 +46,8 @@ void setup(void)
         glVertex3f(x, y, -H / 2.0f);
     }
     glEnd();
+    //upper circle
     glBegin(GL_TRIANGLE_FAN);
-    glNormal3f(0.0f, 0.0f, 1.0f);
     glVertex3f(0.0f, 0.0f, H / 2.0f);
     for (int i = 0; i <= N; i++) {
         float x = R * cos(2.0f * M_PI * i / N);
@@ -59,20 +56,16 @@ void setup(void)
     }
     glEnd();
     glEndList();
-    // End create a display list.
-
     glClearColor(1.0, 1.0, 1.0, 0.0);
 }
 void renderLeg1(){
     glPushMatrix();
-
     glTranslatef(30.0, 0, -20);
     glRotatef(90,1,0,0);
     glRotatef(20,0,1,0);
     glRotatef(20,1,0,1);
     glCallList(aCylinder);
     glPopMatrix();
-
 }void renderLeg2(){
     glPushMatrix();
     glTranslatef(-30.0, 0, -20);
@@ -89,7 +82,6 @@ void renderLeg1(){
     glRotatef(-20,1,0,1);
     glCallList(aCylinder);
     glPopMatrix();
-
 }
 void renderSeat() {
     glPushMatrix();
@@ -190,7 +182,7 @@ int main(int argc, char **argv)
     glutInit(&argc, argv);
 
     glutInitContextVersion(4, 3);
-    glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE);
+    glutInitContextProfile(GLUT_COMPATIBILITY_PROFILE)z
 
     glutInitDisplayMode(GLUT_SINGLE | GLUT_RGBA);
     glutInitWindowSize(500, 500);
